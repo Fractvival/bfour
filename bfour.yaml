@@ -1,0 +1,197 @@
+esphome:
+  name: bfour
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+logger:
+
+api:
+
+ota:
+  password: "Hotentot1919"
+
+wifi:
+  networks:
+  - ssid: "Vergl2"
+    password: "Hovnokleslo105"
+    priority: 0.09 
+  - ssid: "Vergl"
+    password: "Hovnokleslo105"
+    priority: 0.08
+  - ssid: "Cisco"
+    password: "Posta128"
+    priority: 0.07
+  ap:
+    ssid: "ESP (Hotentot1919)"
+    password: "Hotentot1919"
+
+captive_portal:
+
+
+globals:
+   - id: CH1
+     type: float
+     restore_value: no
+     initial_value: '0'
+   - id: CH2
+     type: float
+     restore_value: no
+     initial_value: '0'
+   - id: CH3
+     type: float
+     restore_value: no
+     initial_value: '0'
+   - id: CH4
+     type: float
+     restore_value: no
+     initial_value: '0'
+   - id: CH5
+     type: float
+     restore_value: no
+     initial_value: '0'
+   - id: CH6
+     type: float
+     restore_value: no
+     initial_value: '0'
+
+
+esp32_ble_tracker:
+
+ble_client:
+  - mac_address: 80:6F:B0:F9:B7:84
+    id: grillbt5
+    on_connect:
+      then:
+        - lambda: |-
+            ESP_LOGD("ble_client_lambda", "Connected to BLE device");
+    on_disconnect:
+      then:
+        - lambda: |-
+            ESP_LOGD("ble_client_lambda", "Disconnected from BLE device");            
+
+
+# SENZORY MAJI ROZSAH 0-300 stupnu
+sensor:
+  - platform: template
+    name: CH1
+    id: tempCH1
+    accuracy_decimals: 1
+    update_interval: 2s
+    unit_of_measurement: "°C"
+    lambda: |-
+      return (id(CH1));
+  - platform: template
+    name: CH2
+    id: tempCH2
+    accuracy_decimals: 1
+    update_interval: 2s
+    unit_of_measurement: "°C"
+    lambda: |-
+      return (id(CH2));
+  - platform: template
+    name: CH3
+    id: tempCH3
+    accuracy_decimals: 1
+    update_interval: 2s
+    unit_of_measurement: "°C"
+    lambda: |-
+      return (id(CH3));
+  - platform: template
+    name: CH4
+    id: tempCH4
+    accuracy_decimals: 1
+    update_interval: 2s
+    unit_of_measurement: "°C"
+    lambda: |-
+      return (id(CH4));
+  - platform: template
+    name: CH5
+    id: tempCH5
+    accuracy_decimals: 1
+    update_interval: 2s
+    unit_of_measurement: "°C"
+    lambda: |-
+      return (id(CH5));
+  - platform: template
+    name: CH6
+    id: tempCH6
+    accuracy_decimals: 1
+    update_interval: 2s
+    unit_of_measurement: "°C"
+    lambda: |-
+      return (id(CH6));
+  - platform: ble_client
+    ble_client_id: grillbt5
+    name: "GrillBT5.0"
+    id: grillsens
+    service_uuid: 'ffb0'
+    characteristic_uuid: 'ffb2'
+    update_interval: 5s
+    accuracy_decimals: 1
+    notify: true
+    lambda: |-
+      float grl = 0.0;
+      grl = 0;
+      grl = (float)(((x[2]*255)+x[3])/(float)10.0);
+      if (grl != 6528.0 )
+      {
+        id(CH1) = (float)grl;
+      }
+      else
+      {
+        id(CH1) = 0;
+      }
+      grl = 0;
+      grl = (float)(((x[4]*255)+x[5])/(float)10.0);
+      if (grl != 6528.0 )
+      {
+        id(CH2) = (float)grl;
+      }
+      else
+      {
+        id(CH2) = 0;
+      }
+      grl = 0;
+      grl = (float)(((x[6]*255)+x[7])/(float)10.0);
+      if (grl != 6528.0 )
+      {
+        id(CH3) = (float)grl;
+      }
+      else
+      {
+        id(CH3) = 0;
+      }
+      grl = 0;
+      grl = (float)(((x[8]*255)+x[9])/(float)10.0);
+      if (grl != 6528.0 )
+      {
+        id(CH4) = (float)grl;
+      }
+      else
+      {
+        id(CH4) = 0;
+      }
+      grl = 0;
+      grl = (float)(((x[10]*255)+x[11])/(float)10.0);
+      if (grl != 6528.0 )
+      {
+        id(CH5) = (float)grl;
+      }
+      else
+      {
+        id(CH5) = 0;
+      }
+      grl = 0;
+      grl = (float)(((x[12]*255)+x[13])/(float)10.0);
+      if (grl != 6528.0 )
+      {
+        id(CH6) = (float)grl;
+      }
+      else
+      {
+        id(CH6) = 0;
+      }
+      return (float)0;
